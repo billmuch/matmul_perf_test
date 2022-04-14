@@ -61,8 +61,13 @@ def get_matmul_func(sch, args, dtype):
 
     answer = numpy.dot(a.numpy(), b.numpy())
 
-    func = tvm.build(sch, args, target=target, name="mmult")
+    opt_level = 3
+    with tvm.transform.PassContext(opt_level=opt_level):
+        func = tvm.build(sch, args, target=target, name="mmult")
     assert func
+
+    # print(tvm.lower(sch, args, simple_mode=True))
+    # print(func.get_source("asm"))
 
     c = tvm.nd.array(numpy.zeros((M, N), dtype=dtype), dev)
     func(a, b, c)

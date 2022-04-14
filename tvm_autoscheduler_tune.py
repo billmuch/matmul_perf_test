@@ -54,9 +54,6 @@ def autotune(M, N, K, dtype, target_name, log_file):
     task.tune(tune_option)
     sch, args = task.apply_best(log_file)
 
-    # print("Lowered TIR:")
-    # print(tvm.lower(sch, args, simple_mode=True))
-
 # 检查矩阵乘法结果是否正确，并返回乘法函数
 def get_matmul_func(M, N, K, dtype, target_name, log_file):
     a = tvm.nd.array(numpy.random.rand(M, K).astype(dtype), dev)
@@ -70,9 +67,9 @@ def get_matmul_func(M, N, K, dtype, target_name, log_file):
     func = tvm.build(sch, args, target=target, name="matmul")
     assert func
 
-    c = tvm.nd.array(numpy.zeros((M, N), dtype=dtype), dev)
-    func(a, b, c)
-    tvm.testing.assert_allclose(c.numpy(), answer, rtol=1e-5)
+    # print(tvm.lower(sch, args, simple_mode=True))
+    # print(func.get_source("asm"))
+    # func.export_library("tvm_autoscheduler.so")
 
     c = tvm.nd.array(numpy.zeros((M, N), dtype=dtype), dev)
     func(a, b, c)

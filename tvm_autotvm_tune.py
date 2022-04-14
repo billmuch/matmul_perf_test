@@ -119,6 +119,9 @@ def get_matmul_func(dtype, log_file):
             func = tvm.build(s, arg_bufs, target=target, name="matmul")
     assert func
 
+    # print(tvm.lower(s, arg_bufs, simple_mode=True))
+    # print(func.get_source("asm"))
+
     c = tvm.nd.array(numpy.zeros((M, N), dtype=dtype), dev)
     func(a, b, c)
     tvm.testing.assert_allclose(c.numpy(), answer, rtol=1e-5)
@@ -170,7 +173,6 @@ def main(argv):
         
     func = get_matmul_func(dtype, log_file)
     benchmark(func, dtype)
-    # print(tvm.lower(sch, args, simple_mode=True))
 
 import sys
 if __name__ == '__main__':
